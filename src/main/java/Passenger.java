@@ -15,28 +15,37 @@ public class Passenger {
 
 
     public Passenger (String text) {
-        String[] s = text.split(",");
+        String[] dataItem = text.split(",");
 
-        this.passengerId = Integer.parseInt(s[0]);
-        this.survived = (Integer.parseInt(s[1]) == 1);
-        this.pClass = Integer.parseInt(s[2]);
-        this.name = s[3] + s[4];
-        this.sex = s[5];
+        this.passengerId = Integer.parseInt(dataItem[0]);
+        this.survived = (Integer.parseInt(dataItem[1]) == 1);
+        this.pClass = Integer.parseInt(dataItem[2]);
+        this.name = dataItem[3] + "," + dataItem[4];
+        this.sex = dataItem[5];
 
-        if (s[6].equals("")) {
+        if (dataItem[6].equals("")) {
             this.age = -1;
         }else {
-            this.age = Double.parseDouble(s[6]);
+            this.age = Double.parseDouble(dataItem[6]);
         }
 
-        this.sibSp = Integer.parseInt(s[7]);
-        this.parch = Integer.parseInt(s[8]);
-        this.ticket = s[9];
-        this.fare = Double.parseDouble(s[10]);
-        this.cabin = s[11];
-        if (s.length == 11) {
-            this.embarked = s[12].charAt(0);
+        this.sibSp = Integer.parseInt(dataItem[7]);
+        this.parch = Integer.parseInt(dataItem[8]);
+        this.ticket = dataItem[9];
+        this.fare = Double.parseDouble(dataItem[10]);
+        this.cabin = dataItem[11];
+        if (dataItem.length == 11) {
+            this.embarked = dataItem[12].charAt(0);
         }
+    }
+
+
+    public String getFormattedName() {
+        String fullName = "";
+        String[] split1 = this.name.split(",");
+        String[] split2 = split1[1].split("\\.");
+        fullName = split2[1].substring(1,split2[1].length() - 1) +  " " + split1[0].substring(1);
+        return fullName;
     }
 
 
@@ -55,5 +64,88 @@ public class Passenger {
                 ", cabin='" + cabin + '\'' +
                 ", embarked=" + embarked +
                 '}';
+    }
+
+    public boolean isIdInRange (int min,int max) {
+        boolean isInRange = false;
+        if (this.passengerId >= min && this.passengerId <= max) {
+            isInRange = true;
+        }
+        return isInRange;
+    }
+
+    public boolean isNameCorrect (String name) {
+        boolean isCorrect = false;
+        if (getFormattedName().equals(name) || name.equals("")) {
+            isCorrect = true;
+        }
+        return isCorrect;
+    }
+
+    public boolean isSameClass (int pClass) {
+        boolean isSame = false;
+        if (pClass == this.pClass || pClass == 0) {
+            isSame = true;
+        }
+        return isSame;
+    }
+
+
+    public boolean isSameSex (String sex) {
+        boolean isSame = false;
+        if (sex.equals(this.sex) || sex.equals("All")) {
+            isSame = true;
+        }
+        return isSame;
+    }
+
+
+
+    public int getPassengerId() {
+        return passengerId;
+    }
+
+    public boolean isSurvived() {
+        return survived;
+    }
+
+    public int getpClass() {
+        return pClass;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public double getAge() {
+        return age;
+    }
+
+    public int getSibSp() {
+        return sibSp;
+    }
+
+    public int getParch() {
+        return parch;
+    }
+
+    public String getTicket() {
+        return ticket;
+    }
+
+    public double getFare() {
+        return fare;
+    }
+
+    public String getCabin() {
+        return cabin;
+    }
+
+    public char getEmbarked() {
+        return embarked;
     }
 }
