@@ -1,7 +1,7 @@
 public class Passenger {
 
-    private int passengerId; // מספר מזהה
-    private boolean survived; // אם שרד
+    private int passengerId;
+    private boolean survived;
     private int pClass;
     private String name;
     private String sex;
@@ -14,6 +14,7 @@ public class Passenger {
     private char embarked;
 
 
+
     public Passenger (String text) {
         String[] dataItem = text.split(",");
 
@@ -22,23 +23,20 @@ public class Passenger {
         this.pClass = Integer.parseInt(dataItem[2]);
         this.name = dataItem[3] + "," + dataItem[4];
         this.sex = dataItem[5];
-
         if (dataItem[6].equals("")) {
             this.age = -1;
         }else {
             this.age = Double.parseDouble(dataItem[6]);
         }
-
         this.sibSp = Integer.parseInt(dataItem[7]);
         this.parch = Integer.parseInt(dataItem[8]);
         this.ticket = dataItem[9];
         this.fare = Double.parseDouble(dataItem[10]);
         this.cabin = dataItem[11];
-        if (dataItem.length == 11) {
+        if (dataItem.length == 13) {
             this.embarked = dataItem[12].charAt(0);
         }
     }
-
 
     public String getFormattedName() {
         String fullName = "";
@@ -50,20 +48,19 @@ public class Passenger {
 
 
     public String toString() {
-        return "Passenger{" +
-                "passengerId=" + passengerId +
-                ", survived=" + survived +
-                ", pClass=" + pClass +
-                ", name='" + name + '\'' +
-                ", sex='" + sex + '\'' +
-                ", age=" + age +
-                ", sibSp=" + sibSp +
-                ", parch=" + parch +
-                ", ticket='" + ticket + '\'' +
-                ", fare=" + fare +
-                ", cabin='" + cabin + '\'' +
-                ", embarked=" + embarked +
-                '}';
+        return
+                + passengerId +
+                        "," + (survived ? "1" : "0") +
+                        "," + pClass +
+                        "," + getFormattedName()+
+                        "," + sex +
+                        "," + ((age == -1) ? "":age)  +
+                        "," + sibSp +
+                        "," + parch +
+                        "," + ticket +
+                        "," + fare +
+                        "," + cabin+
+                        "," + embarked + "\n";
     }
 
     public boolean isIdInRange (int min,int max) {
@@ -90,7 +87,6 @@ public class Passenger {
         return isSame;
     }
 
-
     public boolean isSameSex (String sex) {
         boolean isSame = false;
         if (sex.equals(this.sex) || sex.equals("All")) {
@@ -99,53 +95,4 @@ public class Passenger {
         return isSame;
     }
 
-
-
-    public int getPassengerId() {
-        return passengerId;
-    }
-
-    public boolean isSurvived() {
-        return survived;
-    }
-
-    public int getpClass() {
-        return pClass;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public double getAge() {
-        return age;
-    }
-
-    public int getSibSp() {
-        return sibSp;
-    }
-
-    public int getParch() {
-        return parch;
-    }
-
-    public String getTicket() {
-        return ticket;
-    }
-
-    public double getFare() {
-        return fare;
-    }
-
-    public String getCabin() {
-        return cabin;
-    }
-
-    public char getEmbarked() {
-        return embarked;
-    }
 }
