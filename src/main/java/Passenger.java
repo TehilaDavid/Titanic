@@ -1,3 +1,5 @@
+import java.util.Locale;
+
 public class Passenger {
 
     private int passengerId;
@@ -88,7 +90,7 @@ public class Passenger {
 
     public boolean isSameSex(String sex) {
         boolean isSame = false;
-        if (sex.equals(this.sex) || sex.equals("All")) {
+        if (this.sex.equals(sex.toLowerCase(Locale.ROOT)) || sex.equals("All")) {
             isSame = true;
         }
         return isSame;

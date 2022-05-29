@@ -17,15 +17,15 @@ public class Constants {
     public static final int LABEL_WIDTH = 400;
     public static final int LABEL_HEIGHT = 30;
 
-    public static final int COMBO_BOX_WIDTH = 80;
+    public static final int COMBO_BOX_WIDTH = 150;
     public static final int COMBO_BOX_HEIGHT = 30;
 
-    public static final int BUTTON_WIDTH = 150;
+    public static final int BUTTON_WIDTH = 170;
     public static final int BUTTON_HEIGHT = 60;
 
-    public static final int TEXT_FIELD_WIDTH = 130;
+    public static final int TEXT_FIELD_WIDTH = 150;
     public static final int TEXT_FIELD_HEIGHT = 30;
 
     public static final int LABEL_FONT_SIZE = 22;
-    public static final int BUTTON_FONT_SIZE = 30;
+    public static final int BUTTON_FONT_SIZE = 33;
 }
