@@ -166,5 +166,25 @@ public class Passenger {
         return isSame;
     }
 
+    public boolean isAgeInRange(int min, int max) {
+        boolean isInRange = false;
+        if (this.age >= min && this.age <= max) {
+            isInRange = true;
+        }
+        return isInRange;
+    }
 
+    public boolean isSurvived() {
+        return survived;
+    }
+
+    public boolean hasRelative(){
+        return ((this.parch + this.sibSp) > 0);
+    }
+
+
+
+    public double getFare() {
+        return fare;
+    }
 }

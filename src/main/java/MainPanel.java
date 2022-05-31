@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,6 +37,9 @@ public class MainPanel extends JPanel {
     private int x;
     private Font labelFont;
     private Font buttonFont;
+    private Font messageFont;
+    private JLabel message;
+
 
     private ImageIcon background;
 
@@ -43,24 +47,35 @@ public class MainPanel extends JPanel {
     public MainPanel(int x, int y, int width, int height) {
         File file = new File(Constants.PATH_TO_DATA_FILE);
         this.setLayout(null);
-        this.setBounds(x, y + Constants.MARGIN_FROM_TOP, width, height);
+        this.setBounds(x, y, width, height);
         this.filterCounter = 0;
-        this.labelFont = new Font("David",Font.BOLD,Constants.LABEL_FONT_SIZE);
-        this.buttonFont = new Font("David",Font.BOLD,Constants.BUTTON_FONT_SIZE);
+        this.labelFont = new Font("David", Font.BOLD, Constants.LABEL_FONT_SIZE);
+        this.buttonFont = new Font("David", Font.BOLD, Constants.BUTTON_FONT_SIZE);
+        this.messageFont = new Font("Ariel", Font.BOLD, Constants.MESSAGE_FONT_SIZE);
+
 
         createPassengerList(file);
         this.x = x + Constants.MARGIN_FROM_LEFT;
 
-        createFilters(y);
+        createFilters(y + Constants.MARGIN_FROM_TOP);
+
+        this.message = new JLabel();
+        this.message.setBounds(this.x, this.embarkedComboBox.getY() + this.embarkedComboBox.getHeight() + Constants.SPACE * 3, Constants.BUTTON_WIDTH * 3, Constants.BUTTON_HEIGHT);
+        this.message.setForeground(Color.WHITE);
+        this.message.setFont(this.messageFont);
+        this.add(this.message);
 
         filtering();
+
+        statistics();
+
 
     }
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         this.background = new ImageIcon("titanicImage.jpg");
-        this.background.paintIcon(this, g, 0,0);
+        this.background.paintIcon(this, g, 0, 0);
     }
 
     private void createPassengerList(File file) {
@@ -272,7 +287,7 @@ public class MainPanel extends JPanel {
 
     private void createStatisticsButton() {
         this.statisticsButton = new JButton("Statistics");
-        this.statisticsButton.setBounds(filterButton.getX(), this.filterButton.getY()  + Constants.BUTTON_HEIGHT + Constants.SPACE , Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
+        this.statisticsButton.setBounds(filterButton.getX(), this.filterButton.getY() + Constants.BUTTON_HEIGHT + Constants.SPACE, Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
         statisticsButton.setFont(this.labelFont);
         statisticsButton.setFont(this.buttonFont);
         this.add(this.statisticsButton);
@@ -338,7 +353,7 @@ public class MainPanel extends JPanel {
                 maxFare = Integer.parseInt(this.fareMaxTextField.getText());
             } catch (NumberFormatException exception) {
                 System.out.println(exception.getMessage());
-                maxFare = this.passengerList.size();
+                maxFare = Constants.MAX_FARE;
             }
 
             try {
@@ -372,6 +387,13 @@ public class MainPanel extends JPanel {
                     .collect(Collectors.toList());
             System.out.println(filteredList);
 
+
+            int allFiltered = filteredList.size();
+            long filteredSurvive = filteredList.stream().filter(Passenger::isSurvived).count();
+
+            this.message.setText("Total Rows: " + allFiltered + " (" + filteredSurvive + " survived, " + (allFiltered - filteredSurvive) + " did not)");
+
+
             this.filterCounter++;
 
             String filteredPassengers = this.firstLine + "\n";
@@ -395,6 +417,138 @@ public class MainPanel extends JPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    private void statistics() {
+        this.statisticsButton.addActionListener((e) -> {
+            double[] classSurvivals = new double[3];
+            for (int i = 0; i < 3; i++) {
+                classSurvivals[i] = classStatistics(i + 1);
+            }
+            double[] genderSurvival = {genderStatistics("male"), genderStatistics("female")};
+            double[] ageSurvival = new double[6];
+            for (int i = 0; i < 6; i++) {
+                int min = i * 10 + 1;
+                int max = (i + 1) * 10;
+                if (i == 0) {
+                    min = i;
+                } else if (i == 6) {
+                    max = Constants.MAX_AGE;
+                }
+                ageSurvival[i] = ageStatistics(min, max);
+            }
+            double[] relativeSurvival = {relativeStatistics(true), relativeStatistics(false)};
+            double[] fareSurvival = {fareStatistics(0, 10), fareStatistics(11, 30), fareStatistics(30, 800000)};
+            double[] embarkedSurvival = {embarkedStatistics('C'), embarkedStatistics('Q'), embarkedStatistics('S')};
+
+            String statisticText = "";
+            statisticText += "Survival rates by class:";
+            statisticText += "\n" + "1st: " + classSurvivals[0] + "%";
+            statisticText += "\n" + "2nd: " + classSurvivals[1] + "%";
+            statisticText += "\n" + "3rd: " + classSurvivals[2] + "%" + "\n";
+
+            statisticText += "\n" + "Survival rates by sex";
+            statisticText += "\n" + "female: " + genderSurvival[0] + "%";
+            statisticText += "\n" + "male: " + genderSurvival[1] + "%" + "\n";
+
+            statisticText += "\n" + "Survival rates by age";
+            statisticText += "\n" + "0-10: " + ageSurvival[0] + "%";
+            statisticText += "\n" + "11-20: " + ageSurvival[1] + "%";
+            statisticText += "\n" + "21-30: " + ageSurvival[2] + "%";
+            statisticText += "\n" + "31-40: " + ageSurvival[3] + "%";
+            statisticText += "\n" + "41-50: " + ageSurvival[4] + "%";
+            statisticText += "\n" + "51+: " + ageSurvival[5] + "%" + "\n";
+
+            statisticText += "\n" + "Survival rates by family on board";
+            statisticText += "\n" + "Has relatives: " + relativeSurvival[0] + "%";
+            statisticText += "\n" + "Doesn't have relatives: " + relativeSurvival[1] + "%" + "\n";
+
+
+            statisticText += "\n" + "Survival rates by ticket fare";
+            statisticText += "\n" + "less then 10 pounds: " + fareSurvival[0] + "%";
+            statisticText += "\n" + "11-30 pounds : " + fareSurvival[1] + "%";
+            statisticText += "\n" + "30+ pounds : " + fareSurvival[2] + "%" + "\n";
+
+
+            statisticText += "\n" + "Survival rates by port";
+            statisticText += "\n" + "C : " + embarkedSurvival[0] + "%";
+            statisticText += "\n" + "Q : " + embarkedSurvival[1] + "%";
+            statisticText += "\n" + "S : " + embarkedSurvival[2] + "%" + "\n";
+
+            writeToFile(statisticText, Constants.PATH_TO_FILTERED_FILE + "Statistics.txt");
+        });
+    }
+
+    private double classStatistics(int classNum) {
+        List<Passenger> classAmount = this.passengerList
+                .stream()
+                .filter(passenger -> passenger.isSameClass(classNum))
+                .collect(Collectors.toList());
+        long surviveClass = classAmount
+                .stream()
+                .filter(Passenger::isSurvived)
+                .count();
+
+        return (((double) surviveClass / (double) classAmount.size()));
+    }
+
+    private double genderStatistics(String sex) {
+        List<Passenger> genderAmount = this.passengerList
+                .stream()
+                .filter(passenger -> passenger.isSameSex(sex))
+                .collect(Collectors.toList());
+        long genderSurvival = genderAmount
+                .stream()
+                .filter(Passenger::isSurvived)
+                .count();
+        return ((double) genderSurvival / (double) genderAmount.size());
+    }
+
+    private double ageStatistics(int min, int max) {
+        List<Passenger> ageAmount = this.passengerList
+                .stream()
+                .filter(passenger -> passenger.isAgeInRange(min, max))
+                .collect(Collectors.toList());
+        long ageSurvival = ageAmount
+                .stream()
+                .filter(Passenger::isSurvived)
+                .count();
+        return ((double) ageSurvival / (double) ageAmount.size());
+    }
+
+    private double relativeStatistics(boolean hasR) {
+        List<Passenger> relativeAmount = this.passengerList
+                .stream()
+                .filter(passenger -> (passenger.hasRelative() == hasR))
+                .collect(Collectors.toList());
+        long relativeSurvival = relativeAmount
+                .stream()
+                .filter(Passenger::isSurvived)
+                .count();
+        return ((double) relativeSurvival / (double) relativeAmount.size());
+    }
+
+    private double fareStatistics(int min, int max) {
+        List<Passenger> fareAmount = this.passengerList
+                .stream()
+                .filter(passenger -> (passenger.isFareInRange(min, max)))
+                .collect(Collectors.toList());
+        long fareSurvival = fareAmount
+                .stream()
+                .filter(Passenger::isSurvived)
+                .count();
+        return ((double) fareSurvival / (double) fareAmount.size());
+    }
+
+    private double embarkedStatistics(char embarked) {
+        List<Passenger> embarkedAmount = this.passengerList
+                .stream()
+                .filter(passenger -> passenger.isSameEmbarked(embarked))
+                .collect(Collectors.toList());
+        long embarkedSurvive = embarkedAmount
+                .stream()
+                .filter(Passenger::isSurvived)
+                .count();
+        return ((double) embarkedSurvive / (double) embarkedAmount.size());
     }
 }

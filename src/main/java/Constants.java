@@ -28,4 +28,8 @@ public class Constants {
 
     public static final int LABEL_FONT_SIZE = 22;
     public static final int BUTTON_FONT_SIZE = 33;
+    public static final int MESSAGE_FONT_SIZE = 25;
+
+    public static final int MAX_FARE = 600;
+    public static final int MAX_AGE = 120;
 }
